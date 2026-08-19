@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Board | Task Manager</title>
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/output.css">
+</head>
+
+<body>
+
+    <nav class="fixed top-0 left-0 right-0 w-full bg-linear-to-r from-indigo-600 via-indigo-600 to-purple-500 text-white px-8 py-4 flex items-center justify-between rounded-b-xl shadow-md z-40">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-table-columns text-xl"></i>
+            <span class="text-xl font-bold tracking-wide">Kanban</span>
+        </div>
+
+        <button id="open-modal-btn" class="bg-white/20 hover:bg-white/30 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all">
+            <i class="fa-solid fa-plus text-lg"></i>
+        </button>
+    </nav>
+
+    <div id="toast" class="fixed top-20 right-6 bg-emerald-500 text-white px-4 py-2 rounded-lg shadow-lg hidden z-50 text-sm font-medium transition-all">
+        Task added successfully!
+    </div>
+
+    <div class="container mx-auto p-6 pt-24 grow">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between min-h-130">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">To Do</h3>
+                            <p id="todo-count" class="text-sm text-gray-400">0 tasks</p>
+                        </div>
+                    </div>
+                    <div id="todo-list" class="space-y-4"></div>
+                </div>
+
+                <div id="todo-empty" class="flex flex-col items-center justify-center my-auto text-center py-8">
+                    <i class="fa-regular fa-folder-open text-5xl text-gray-300 mb-3"></i>
+                    <p class="font-semibold text-gray-500 mb-1">No tasks yet</p>
+                    <p class="text-xs text-gray-400">Click + to add one</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between min-h-130">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center text-amber-500">
+                            <i class="fa-solid fa-spinner"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">In Progress</h3>
+                            <p id="in-progress-count" class="text-sm text-gray-400">0 tasks</p>
+                        </div>
+                    </div>
+                    <div id="in-progress-list" class="space-y-4"></div>
+                </div>
+
+                <div id="in-progress-empty" class="flex flex-col items-center justify-center my-auto text-center py-8">
+                    <i class="fa-regular fa-folder-open text-5xl text-gray-300 mb-3"></i>
+                    <p class="font-semibold text-gray-500 mb-1">No tasks yet</p>
+                    <p class="text-xs text-gray-400">Click + to add one</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between min-h-130">
+                <div>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500">
+                            <i class="fa-regular fa-circle-check text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">Completed</h3>
+                            <p id="completed-count" class="text-sm text-gray-400">0 tasks</p>
+                        </div>
+                    </div>
+                    <div id="completed-list" class="space-y-4"></div>
+                </div>
+
+                <div id="completed-empty" class="flex flex-col items-center justify-center my-auto text-center py-8">
+                    <i class="fa-regular fa-folder-open text-5xl text-gray-300 mb-3"></i>
+                    <p class="font-semibold text-gray-500 mb-1">No tasks yet</p>
+                    <p class="text-xs text-gray-400">Click + to add one</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="task-modal" class="fixed inset-0 bg-black/50 items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl w-full max-w-lg p-6 shadow-2xl relative mx-4">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-gray-100">
+                <h2 id="modal-title" class="text-lg font-bold text-gray-800">Create New Task</h2>
+                <button id="close-modal-btn" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="task-form" class="space-y-4">
+                <input type="hidden" id="task-id">
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-heading text-gray-400"></i>
+                        Task Title <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="task-title" required placeholder="What needs to be done?" class="w-full border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-solid fa-flag text-gray-400"></i>
+                            Priority
+                        </label>
+                        <select id="task-priority" class="w-full border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white transition-all">
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                            <i class="fa-regular fa-calendar text-gray-400"></i>
+                            Due Date
+                        </label>
+                        <input type="date" id="task-date" class="w-full border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-gray-600 transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-align-left text-gray-400"></i>
+                        Description
+                    </label>
+                    <textarea id="task-desc" rows="3" maxlength="500" placeholder="Add more details about this task..." class="w-full border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none transition-all"></textarea>
+                    <div id="char-count" class="text-right text-[10px] text-gray-400 mt-1">0/500</div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3">
+                    <button type="button" id="cancel-modal-btn" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submit-btn" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md shadow-indigo-200 transition-all">
+                        + Add Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="bg-slate-900 text-gray-300 py-4 text-center text-sm font-medium min-h-20">
+        Made with <i class="fa-solid fa-heart text-red-500 mx-1"></i> by Route Academy
+    </footer>
+
+    <script type="module" src="index.js"></script>
+</body>
+
+</html>
